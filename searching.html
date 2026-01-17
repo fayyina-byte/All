@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functional Search Bar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .search-section {
+            margin-bottom: 40px;
+        }
+        
+        .search-bar-container {
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto 20px;
+        }
+        
+        .search-bar {
+            width: 100%;
+            padding: 18px 25px 18px 60px;
+            font-size: 18px;
+            border: 2px solid #e0e6ed;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+        }
+        
+        .search-bar:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            background-color: white;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 20px;
+        }
+        
+        .search-info {
+            display: flex;
+            justify-content: space-between;
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .results-count {
+            font-weight: 600;
+            color: #3498db;
+        }
+        
+        .content-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            padding: 20px;
+            background-color: #f8fafc;
+            border-bottom: 1px solid #eef2f7;
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+        
+        .card-category {
+            display: inline-block;
+            background-color: #e1f5fe;
+            color: #0288d1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .card-description {
+            color: #546e7a;
+            line-height: 1.5;
+        }
+        
+        .card-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            color: #78909c;
+            font-size: 0.9rem;
+        }
+        
+        .highlight {
+            background-color: #fff9c4;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+        }
+        
+        .no-results i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #ecf0f1;
+        }
+        
+        .instructions {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .instructions p {
+            color: #5a6c7d;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .content-section {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        .example-search-terms {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .search-term {
+            background-color: #e8f4fc;
+            color: #3498db;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .search-term:hover {
+            background-color: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Functional Search Bar</h1>
+        <p class="subtitle">Type in the search box below to filter the content in real-time. The search checks both titles and descriptions.</p>
+    </header>
+    
+    <main class="container">
+        <section class="search-section">
+            <div class="search-bar-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-bar" id="searchInput" placeholder="Search for programming topics, frameworks, or languages...">
+            </div>
+            
+            <div class="search-info">
+                <div class="results-count">Showing <span id="resultsCount">12</span> of 12 items</div>
+                <div class="search-examples">Try: <strong>JavaScript</strong>, <strong>React</strong>, or <strong>Database</strong></div>
+            </div>
+            
+            <div class="example-search-terms">
+                <div class="search-term" data-term="javascript">JavaScript</div>
+                <div class="search-term" data-term="python">Python</div>
+                <div class="search-term" data-term="react">React</div>
+                <div class="search-term" data-term="database">Database</div>
+                <div class="search-term" data-term="web">Web Development</div>
+                <div class="search-term" data-term="cloud">Cloud</div>
+            </div>
+        </section>
+        
+        <section class="content-section" id="contentContainer">
+            <!-- Cards will be dynamically generated here -->
+        </section>
+        
+        <div class="instructions">
+            <h3>How this search works:</h3>
+            <p>• The search is case-insensitive (searching "javascript" or "JavaScript" gives same results)</p>
+            <p>• It searches through both title and description text</p>
+            <p>• Results update as you type (no need to press enter)</p>
+            <p>• Click on the example search terms to try different queries</p>
+            <p>• Matching text is highlighted in yellow for easy identification</p>
+        </div>
+    </main>
+
+    <script>
+        // Sample data for our cards
+        const cardData = [
+            {
+                id: 1,
+                title: "JavaScript Fundamentals",
+                category: "Programming",
+                description: "Learn the basics of JavaScript including variables, functions, and control structures.",
+                date: "2023-10-15",
+                author: "Alex Johnson"
+            },
+            {
+                id: 2,
+                title: "Introduction to React",
+                category: "Frontend",
+                description: "A comprehensive guide to React library for building user interfaces.",
+                date: "2023-11-02",
+                author: "Maria Chen"
+            },
+            {
+                id: 3,
+                title: "Python for Data Science",
+                category: "Data Science",
+                description: "Using Python with libraries like Pandas and NumPy for data analysis.",
+                date: "2023-09-28",
+                author: "David Wilson"
+            },
+            {
+                id: 4,
+                title: "CSS Grid and Flexbox",
+                category: "Web Design",
+                description: "Modern CSS techniques for creating responsive layouts.",
+                date: "2023-10-30",
+                author: "Samira Khan"
+            },
+            {
+                id: 5,
+                title: "Node.js Backend Development",
+                category: "Backend",
+                description: "Building server-side applications with Node.js and Express framework.",
+                date: "2023-11-10",
+                author: "Robert Davis"
+            },
+            {
+                id: 6,
+                title: "Database Design Principles",
+                category: "Database",
+                description: "Learn how to design efficient and scalable databases.",
+                date: "2023-10-05",
+                author: "Linda Martinez"
+            },
+            {
+                id: 7,
+                title: "Vue.js Framework Overview",
+                category: "Frontend",
+                description: "Introduction to Vue.js for building interactive web interfaces.",
+                date: "2023-11-12",
+                author: "Thomas Lee"
+            },
+            {
+                id: 8,
+                title: "Cloud Computing Basics",
+                category: "Cloud",
+                description: "Understanding cloud services, deployment models, and key providers.",
+                date: "2023-10-22",
+                author: "Sophia Williams"
+            },
+            {
+                id: 9,
+                title: "Web Security Best Practices",
+                category: "Security",
+                description: "Essential security measures for web application development.",
+                date: "2023-11-05",
+                author: "James Anderson"
+            },
+            {
+                id: 10,
+                title: "Mobile App Development with React Native",
+                category: "Mobile",
+                description: "Building cross-platform mobile applications using React Native.",
+                date: "2023-10-18",
+                author: "Olivia Taylor"
+            },
+            {
+                id: 11,
+                title: "REST API Design",
+                category: "Backend",
+                description: "Principles and best practices for designing RESTful APIs.",
+                date: "2023-11-08",
+                author: "Michael Brown"
+            },
+            {
+                id: 12,
+                title: "Introduction to Machine Learning",
+                category: "AI/ML",
+                description: "Basic concepts and algorithms in machine learning with Python examples.",
+                date: "2023-10-25",
+                author: "Emma Garcia"
+            }
+        ];
+
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const contentContainer = document.getElementById('contentContainer');
+        const resultsCount = document.getElementById('resultsCount');
+        const searchTerms = document.querySelectorAll('.search-term');
+
+        // Initialize by rendering all cards
+        renderCards(cardData);
+
+        // Add event listener for search input
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            filterCards(searchTerm);
+        });
+
+        // Add event listeners for example search terms
+        searchTerms.forEach(term => {
+            term.addEventListener('click', function() {
+                const termText = this.getAttribute('data-term');
+                searchInput.value = termText;
+                searchInput.focus();
+                filterCards(termText.toLowerCase());
+            });
+        });
+
+        // Function to filter cards based on search term
+        function filterCards(searchTerm) {
+            if (searchTerm.trim() === '') {
+                renderCards(cardData);
+                resultsCount.textContent = cardData.length;
+                return;
+            }
+
+            const filteredCards = cardData.filter(card => {
+                const titleMatch = card.title.toLowerCase().includes(searchTerm);
+                const descMatch = card.description.toLowerCase().includes(searchTerm);
+                const categoryMatch = card.category.toLowerCase().includes(searchTerm);
+                return titleMatch || descMatch || categoryMatch;
+            });
+
+            renderCards(filteredCards, searchTerm);
+            resultsCount.textContent = filteredCards.length;
+        }
+
+        // Function to render cards with optional highlighting
+        function renderCards(cards, searchTerm = '') {
+            contentContainer.innerHTML = '';
+
+            if (cards.length === 0) {
+                contentContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="far fa-frown"></i>
+                        <h3>No matching results found</h3>
+                        <p>Try a different search term or browse all items</p>
+                    </div>
+                `;
+                return;
+            }
+
+            cards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                
+                let title = card.title;
+                let description = card.description;
+                
+                // Highlight matching text if searchTerm is provided
+                if (searchTerm) {
+                    const regex = new RegExp(`(${searchTerm})`, 'gi');
+                    title = title.replace(regex, '<span class="highlight">$1</span>');
+                    description = description.replace(regex, '<span class="highlight">$1</span>');
+                }
+                
+                cardElement.innerHTML = `
+                    <div class="card-header">
+                        <h3 class="card-title">${title}</h3>
+                        <span class="card-category">${card.category}</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-description">${description}</p>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-date"><i class="far fa-calendar"></i> ${card.date}</span>
+                        <span class="card-author"><i class="far fa-user"></i> ${card.author}</span>
+                    </div>
+                `;
+                
+                contentContainer.appendChild(cardElement);
+            });
+        }
+
+        // Add a focus effect to the search bar when page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                searchInput.focus();
+            }, 300);
+        });
+    </script>
+</body>
+</html>
